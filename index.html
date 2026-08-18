@@ -37,9 +37,9 @@
   <p>Verifying Credentials...</p>
 
   <script>
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzRPrXQzXL_tUsNlSJJvWHD-7gSju0kB6uwGJA6WNj7ptccS0sut_hleczi4XnzBB_M/exec";
+    // Must match your active Apps Script deployment URL
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzbKfK__d2b8Z1_UEiCmT7sxGK-Ob3fbZFsHlVSWswDgPiaa1YqqrbjXgPa4LDiuIJX/exec";
     
-    // Pass query params directly to the web app URL without using an iframe
     const queryString = window.location.search;
     window.location.replace(WEB_APP_URL + queryString);
   </script>
