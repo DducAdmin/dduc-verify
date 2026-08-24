@@ -211,7 +211,7 @@
 
       <div class="content">
         <div class="photo-wrapper">
-          <img id="student-photo" src="" alt="Student Photo" onerror="this.src='https://via.placeholder.com/105x125?text=No+Photo'">
+          <img id="student-photo" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='105' height='125' viewBox='0 0 105 125'><rect width='100%' height='100%' fill='%23cbd5e1'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='%2364748b' font-size='12' font-family='sans-serif'>No Photo</text></svg>" alt="Student Photo">
         </div>
 
         <!-- Student Name -->
@@ -303,6 +303,7 @@
 
   <script>
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyt4CiA-Rb4M28tXtZBQj8d_PV0Mm34Ao3hp5Y_Hn3W4qw5ywwhTATJbdAbkkGh661Vpg/exec";
+    const DEFAULT_SVG = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='105' height='125' viewBox='0 0 105 125'><rect width='100%' height='100%' fill='%23cbd5e1'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='%2364748b' font-size='12' font-family='sans-serif'>No Photo</text></svg>";
 
     document.addEventListener("DOMContentLoaded", function () {
       const urlParams = new URLSearchParams(window.location.search);
@@ -315,7 +316,6 @@
         return;
       }
 
-      // Format current scan timestamp
       const now = new Date();
       document.getElementById('scan-time').textContent = `Scanned: ${now.toLocaleTimeString()}`;
 
@@ -347,7 +347,6 @@
     function formatPhotoUrl(url) {
       if (!url || url === "N/A") return "";
       
-      // Convert standard Google Drive view/share links to high-performance direct CDN URLs
       const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/);
       if (match && match[1]) {
         return `https://lh3.googleusercontent.com/d/${match[1]}=s400`;
@@ -385,9 +384,16 @@
       document.getElementById('validUpto').textContent = s.validUpto;
       document.getElementById('group-name').textContent = groupName || "Original";
 
+      const photoElement = document.getElementById('student-photo');
       const photoSrc = formatPhotoUrl(s.photo);
+      
       if (photoSrc) {
-        document.getElementById('student-photo').src = photoSrc;
+        photoElement.onerror = function() {
+          this.src = DEFAULT_SVG;
+        };
+        photoElement.src = photoSrc;
+      } else {
+        photoElement.src = DEFAULT_SVG;
       }
 
       document.getElementById('result').classList.remove('hidden');
