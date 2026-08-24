@@ -104,7 +104,7 @@
       object-fit: cover;
       border-radius: 8px;
       border: 2px solid #ffffff;
-      box-shadow: 0 0 14px rgba(239, 68, 68, 0.35); /* Subtle glowing border effect */
+      box-shadow: 0 0 14px rgba(239, 68, 68, 0.35); /* Subtle red glowing border */
     }
 
     /* Field Card Styling */
@@ -315,7 +315,7 @@
         return;
       }
 
-      // Record current scan timestamp
+      // Format current scan timestamp
       const now = new Date();
       document.getElementById('scan-time').textContent = `Scanned: ${now.toLocaleTimeString()}`;
 
@@ -346,9 +346,11 @@
 
     function formatPhotoUrl(url) {
       if (!url || url === "N/A") return "";
+      
+      // Convert standard Google Drive view/share links to high-performance direct CDN URLs
       const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/);
       if (match && match[1]) {
-        return `https://drive.google.com/thumbnail?id=${match[1]}&sz=s400`;
+        return `https://lh3.googleusercontent.com/d/${match[1]}=s400`;
       }
       return url;
     }
