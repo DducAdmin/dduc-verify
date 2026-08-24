@@ -46,7 +46,6 @@
       border: 1px solid #dbe2ea;
     }
 
-    /* Header */
     .header {
       background: var(--header-bg);
       color: white;
@@ -68,7 +67,6 @@
       font-weight: 500;
     }
 
-    /* Verification Banner */
     .status-banner {
       padding: 10px;
       text-align: center;
@@ -87,12 +85,10 @@
       color: var(--error-text);
     }
 
-    /* Content Area */
     .content {
       padding: 16px 18px;
     }
 
-    /* Photo Styling */
     .photo-wrapper {
       text-align: center;
       margin: 8px 0 18px 0;
@@ -104,10 +100,9 @@
       object-fit: cover;
       border-radius: 8px;
       border: 2px solid #ffffff;
-      box-shadow: 0 0 14px rgba(239, 68, 68, 0.35); /* Subtle red glowing border */
+      box-shadow: 0 0 14px rgba(239, 68, 68, 0.35);
     }
 
-    /* Field Card Styling */
     .field-card {
       border: 1px solid var(--border-color);
       border-radius: 10px;
@@ -138,7 +133,6 @@
       gap: 8px;
     }
 
-    /* Footer */
     .card-footer {
       background: #f8fafc;
       border-top: 1px solid var(--border-color);
@@ -159,7 +153,6 @@
       font-weight: 700;
     }
 
-    /* Loader / States */
     .state-box {
       text-align: center;
       padding: 40px 10px;
@@ -211,22 +204,19 @@
 
       <div class="content">
         <div class="photo-wrapper">
-          <img id="student-photo" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='105' height='125' viewBox='0 0 105 125'><rect width='100%' height='100%' fill='%23cbd5e1'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='%2364748b' font-size='12' font-family='sans-serif'>No Photo</text></svg>" alt="Student Photo">
+          <img id="student-photo" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='105' height='125' viewBox='0 0 105 125'><rect width='100%' height='100%' fill='%23cbd5e1'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='%2364748b' font-size='12' font-family='sans-serif'>No Photo</text></svg>" alt="Student Photo" decoding="async">
         </div>
 
-        <!-- Student Name -->
         <div class="field-card">
           <div class="field-label">Student Name</div>
           <div class="field-val" id="name">-</div>
         </div>
 
-        <!-- Course Name -->
         <div class="field-card">
           <div class="field-label">Course Name</div>
           <div class="field-val" id="course">-</div>
         </div>
 
-        <!-- Roll Numbers -->
         <div class="grid-2col">
           <div class="field-card">
             <div class="field-label">College Roll No.</div>
@@ -238,7 +228,6 @@
           </div>
         </div>
 
-        <!-- DOB & Admission -->
         <div class="grid-2col">
           <div class="field-card">
             <div class="field-label">Date of Birth</div>
@@ -250,7 +239,6 @@
           </div>
         </div>
 
-        <!-- Mobile & Email -->
         <div class="grid-2col">
           <div class="field-card">
             <div class="field-label">Student's Mobile No.</div>
@@ -262,7 +250,6 @@
           </div>
         </div>
 
-        <!-- Father Details -->
         <div class="grid-2col">
           <div class="field-card">
             <div class="field-label">Father's Name</div>
@@ -274,13 +261,11 @@
           </div>
         </div>
 
-        <!-- Local Address -->
         <div class="field-card">
           <div class="field-label">Local Address</div>
           <div class="field-val" id="localAddress">-</div>
         </div>
 
-        <!-- Validity & Status -->
         <div class="grid-2col">
           <div class="field-card">
             <div class="field-label">Valid Upto</div>
@@ -293,7 +278,6 @@
         </div>
       </div>
 
-      <!-- Footer Bar -->
       <div class="card-footer">
         <div class="footer-group">Group: <span id="group-name">Original</span></div>
         <div id="scan-time">Scanned: --:--:--</div>
@@ -306,97 +290,113 @@
     const DEFAULT_SVG = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='105' height='125' viewBox='0 0 105 125'><rect width='100%' height='100%' fill='%23cbd5e1'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='%2364748b' font-size='12' font-family='sans-serif'>No Photo</text></svg>";
 
     document.addEventListener("DOMContentLoaded", function () {
-      const urlParams = new URLSearchParams(window.location.search);
-      const group = urlParams.get('g');
-      const rollNo = urlParams.get('r');
-      const token = urlParams.get('t');
+      const els = {
+        loading: document.getElementById('loading'),
+        error: document.getElementById('error'),
+        errorMsg: document.getElementById('error-message'),
+        result: document.getElementById('result'),
+        banner: document.getElementById('status-banner'),
+        status: document.getElementById('status'),
+        photo: document.getElementById('student-photo'),
+        name: document.getElementById('name'),
+        course: document.getElementById('course'),
+        rollNo: document.getElementById('rollNo'),
+        examRollNo: document.getElementById('examRollNo'),
+        dob: document.getElementById('dob'),
+        admissionYear: document.getElementById('admissionYear'),
+        studentMobile: document.getElementById('studentMobile'),
+        email: document.getElementById('email'),
+        fatherName: document.getElementById('fatherName'),
+        fatherMobile: document.getElementById('fatherMobile'),
+        localAddress: document.getElementById('localAddress'),
+        validUpto: document.getElementById('validUpto'),
+        groupName: document.getElementById('group-name'),
+        scanTime: document.getElementById('scan-time')
+      };
+
+      const params = new URLSearchParams(window.location.search);
+      const group = params.get('g');
+      const rollNo = params.get('r');
+      const token = params.get('t');
 
       if (!group || !rollNo || !token) {
-        showError("Invalid parameters provided in QR link.");
+        showError(els, "Invalid parameters provided in QR link.");
         return;
       }
 
-      const now = new Date();
-      document.getElementById('scan-time').textContent = `Scanned: ${now.toLocaleTimeString()}`;
+      els.scanTime.textContent = `Scanned: ${new Date().toLocaleTimeString()}`;
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 8000);
 
       const requestUrl = `${APPS_SCRIPT_URL}?g=${encodeURIComponent(group)}&r=${encodeURIComponent(rollNo)}&t=${encodeURIComponent(token)}`;
 
-      fetch(requestUrl)
-        .then(response => response.json())
+      fetch(requestUrl, { signal: controller.signal })
+        .then(res => res.json())
         .then(data => {
-          document.getElementById('loading').classList.add('hidden');
+          clearTimeout(timeoutId);
+          els.loading.classList.add('hidden');
 
           if (!data.success) {
-            showError(data.error || "Verification failed.");
+            showError(els, data.error || "Verification failed.");
             return;
           }
 
-          renderStudent(data.student, data.groupName, data.isExpired);
+          renderStudent(els, data.student, data.groupName, data.isExpired);
         })
         .catch(err => {
-          showError("Network error: Verification server unreachable.");
+          clearTimeout(timeoutId);
+          const msg = err.name === 'AbortError' 
+            ? "Request timeout: Server response took too long." 
+            : "Network error: Verification server unreachable.";
+          showError(els, msg);
         });
     });
 
-    function showError(msg) {
-      document.getElementById('loading').classList.add('hidden');
-      document.getElementById('error').classList.remove('hidden');
-      document.getElementById('error-message').textContent = msg;
+    function showError(els, msg) {
+      els.loading.classList.add('hidden');
+      els.error.classList.remove('hidden');
+      els.errorMsg.textContent = msg;
     }
 
     function formatPhotoUrl(url) {
       if (!url || url === "N/A") return "";
-      
       const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/);
-      if (match && match[1]) {
-        return `https://lh3.googleusercontent.com/d/${match[1]}=s400`;
-      }
-      return url;
+      return match && match[1] ? `https://lh3.googleusercontent.com/d/${match[1]}=s400` : url;
     }
 
-    function renderStudent(s, groupName, isExpired) {
-      const banner = document.getElementById('status-banner');
-      const statusElement = document.getElementById('status');
-
+    function renderStudent(els, s, groupName, isExpired) {
       if (isExpired) {
-        banner.className = "status-banner banner-failed";
-        banner.textContent = "● EXPIRED STUDENT RECORD";
-        statusElement.textContent = "✕ Expired";
-        statusElement.style.color = "#c0392b";
+        els.banner.className = "status-banner banner-failed";
+        els.banner.textContent = "● EXPIRED STUDENT RECORD";
+        els.status.textContent = "✕ Expired";
+        els.status.style.color = "#c0392b";
       } else {
-        banner.className = "status-banner banner-verified";
-        banner.textContent = "● VERIFIED STUDENT RECORD";
-        statusElement.textContent = `✓ ${s.status || 'Active'}`;
-        statusElement.style.color = "#0d8a43";
+        els.banner.className = "status-banner banner-verified";
+        els.banner.textContent = "● VERIFIED STUDENT RECORD";
+        els.status.textContent = `✓ ${s.status || 'Active'}`;
+        els.status.style.color = "#0d8a43";
       }
 
-      document.getElementById('name').textContent = s.name;
-      document.getElementById('course').textContent = s.courseName;
-      document.getElementById('rollNo').textContent = s.rollNo;
-      document.getElementById('examRollNo').textContent = s.examRollNo;
-      document.getElementById('dob').textContent = s.dob;
-      document.getElementById('admissionYear').textContent = s.yearOfAdmission;
-      document.getElementById('studentMobile').textContent = s.studentMobile;
-      document.getElementById('email').textContent = s.institutionalEmail;
-      document.getElementById('fatherName').textContent = s.fatherName;
-      document.getElementById('fatherMobile').textContent = s.fatherMobile;
-      document.getElementById('localAddress').textContent = s.localAddress;
-      document.getElementById('validUpto').textContent = s.validUpto;
-      document.getElementById('group-name').textContent = groupName || "Original";
+      els.name.textContent = s.name;
+      els.course.textContent = s.courseName;
+      els.rollNo.textContent = s.rollNo;
+      els.examRollNo.textContent = s.examRollNo;
+      els.dob.textContent = s.dob;
+      els.admissionYear.textContent = s.yearOfAdmission;
+      els.studentMobile.textContent = s.studentMobile;
+      els.email.textContent = s.institutionalEmail;
+      els.fatherName.textContent = s.fatherName;
+      els.fatherMobile.textContent = s.fatherMobile;
+      els.localAddress.textContent = s.localAddress;
+      els.validUpto.textContent = s.validUpto;
+      els.groupName.textContent = groupName || "Original";
 
-      const photoElement = document.getElementById('student-photo');
       const photoSrc = formatPhotoUrl(s.photo);
-      
-      if (photoSrc) {
-        photoElement.onerror = function() {
-          this.src = DEFAULT_SVG;
-        };
-        photoElement.src = photoSrc;
-      } else {
-        photoElement.src = DEFAULT_SVG;
-      }
+      els.photo.onerror = function() { this.src = DEFAULT_SVG; };
+      els.photo.src = photoSrc || DEFAULT_SVG;
 
-      document.getElementById('result').classList.remove('hidden');
+      els.result.classList.remove('hidden');
     }
   </script>
 </body>
