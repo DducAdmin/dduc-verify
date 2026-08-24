@@ -186,194 +186,6 @@
   </div>
 
   <script>
-    const APPS_SCRIPT_URL = "<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DDUC - Student Verification</title>
-  <style>
-    :root {
-      --primary: #003366;
-      --accent: #27ae60;
-      --danger: #c0392b;
-      --bg: #f4f6f9;
-      --card-bg: #ffffff;
-      --text: #333333;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    }
-
-    body {
-      background-color: var(--bg);
-      color: var(--text);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      padding: 16px;
-    }
-
-    .container {
-      width: 100%;
-      max-width: 480px;
-      background: var(--card-bg);
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-      overflow: hidden;
-    }
-
-    .header {
-      background: var(--primary);
-      color: white;
-      text-align: center;
-      padding: 20px 16px;
-    }
-
-    .header h1 {
-      font-size: 1.25rem;
-      font-weight: 700;
-      margin-bottom: 4px;
-    }
-
-    .header p {
-      font-size: 0.85rem;
-      opacity: 0.85;
-    }
-
-    .content {
-      padding: 24px 20px;
-    }
-
-    .state-box {
-      text-align: center;
-      padding: 30px 10px;
-    }
-
-    .spinner {
-      border: 4px solid rgba(0,0,0,0.1);
-      border-top: 4px solid var(--primary);
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      animation: spin 1s linear infinite;
-      margin: 0 auto 16px;
-    }
-
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    .status-badge {
-      display: inline-block;
-      padding: 6px 16px;
-      border-radius: 20px;
-      font-weight: 600;
-      font-size: 0.9rem;
-      margin-bottom: 20px;
-    }
-
-    .badge-valid { background: #e8f8f0; color: var(--accent); border: 1px solid #a3e4d7; }
-    .badge-invalid { background: #fadbd8; color: var(--danger); border: 1px solid #f5b7b1; }
-
-    .photo-wrapper {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    .photo-wrapper img {
-      width: 110px;
-      height: 130px;
-      object-fit: cover;
-      border-radius: 8px;
-      border: 2px solid #ddd;
-    }
-
-    .details-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.9rem;
-    }
-
-    .details-table tr {
-      border-bottom: 1px solid #edf2f7;
-    }
-
-    .details-table tr:last-child {
-      border-bottom: none;
-    }
-
-    .details-table td {
-      padding: 10px 4px;
-      vertical-align: top;
-    }
-
-    .details-table td.label {
-      font-weight: 600;
-      color: #666;
-      width: 40%;
-    }
-
-    .details-table td.val {
-      color: #111;
-      font-weight: 500;
-    }
-
-    .hidden { display: none; }
-  </style>
-</head>
-<body>
-
-  <div class="container">
-    <div class="header">
-      <h1>Deen Dayal Upadhyaya College</h1>
-      <p>University of Delhi • Verification Portal</p>
-    </div>
-
-    <div class="content">
-      <!-- Loading State -->
-      <div id="loading" class="state-box">
-        <div class="spinner"></div>
-        <p>Verifying HMAC signature...</p>
-      </div>
-
-      <!-- Error State -->
-      <div id="error" class="state-box hidden">
-        <div class="status-badge badge-invalid">VERIFICATION FAILED</div>
-        <p id="error-message" style="color: var(--danger); font-weight: 500;"></p>
-      </div>
-
-      <!-- Result State -->
-      <div id="result" class="hidden">
-        <div style="text-align: center;">
-          <div id="badge" class="status-badge"></div>
-        </div>
-
-        <div class="photo-wrapper" id="photo-container">
-          <img id="student-photo" src="" alt="Student Photo" onerror="this.src='https://via.placeholder.com/110x130?text=No+Photo'">
-        </div>
-
-        <table class="details-table">
-          <tr><td class="label">Full Name</td><td class="val" id="name"></td></tr>
-          <tr><td class="label">Course</td><td class="val" id="course"></td></tr>
-          <tr><td class="label">College Roll No</td><td class="val" id="rollNo"></td></tr>
-          <tr><td class="label">Exam Roll No</td><td class="val" id="examRollNo"></td></tr>
-          <tr><td class="label">Admission Year</td><td class="val" id="admissionYear"></td></tr>
-          <tr><td class="label">Institutional Email</td><td class="val" id="email"></td></tr>
-          <tr><td class="label">Valid Upto</td><td class="val" id="validUpto"></td></tr>
-          <tr><td class="label">Status</td><td class="val" id="status"></td></tr>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <script>
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzG-jbY08T36UrN-hGbj0i0CYGKOKDf8QbIeEOy4UOk5yi9z5NlaC5PL3feTwae6i7B1A/exec";
 
     document.addEventListener("DOMContentLoaded", function () {
@@ -390,7 +202,10 @@
       const requestUrl = `${APPS_SCRIPT_URL}?g=${encodeURIComponent(group)}&r=${encodeURIComponent(rollNo)}&t=${encodeURIComponent(token)}`;
 
       fetch(requestUrl)
-        .then(response => response.json())
+        .then(response => {
+          if (!response.ok) throw new Error("HTTP error " + response.status);
+          return response.json();
+        })
         .then(data => {
           document.getElementById('loading').classList.add('hidden');
 
@@ -412,69 +227,14 @@
       document.getElementById('error-message').textContent = msg;
     }
 
-    function renderStudent(s, isExpired) {
-      const badge = document.getElementById('badge');
-      if (isExpired) {
-        badge.className = "status-badge badge-invalid";
-        badge.textContent = "EXPIRED RECORD";
-      } else {
-        badge.className = "status-badge badge-valid";
-        badge.textContent = "VERIFIED OFFICIAL ID";
+    function formatPhotoUrl(url) {
+      if (!url || url === "N/A") return "";
+      // Converts Google Drive view URLs to direct thumbnail links
+      const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/);
+      if (match && match[1]) {
+        return `https://drive.google.com/thumbnail?id=${match[1]}&sz=s400`;
       }
-
-      document.getElementById('name').textContent = s.name;
-      document.getElementById('course').textContent = s.courseName;
-      document.getElementById('rollNo').textContent = s.rollNo;
-      document.getElementById('examRollNo').textContent = s.examRollNo;
-      document.getElementById('admissionYear').textContent = s.yearOfAdmission;
-      document.getElementById('email').textContent = s.institutionalEmail;
-      document.getElementById('validUpto').textContent = s.validUpto;
-      document.getElementById('status').textContent = s.status;
-
-      if (s.photo && s.photo !== "N/A") {
-        document.getElementById('student-photo').src = s.photo;
-      }
-
-      document.getElementById('result').classList.remove('hidden');
-    }
-  </script>
-</body>
-</html>";
-
-    document.addEventListener("DOMContentLoaded", function () {
-      const urlParams = new URLSearchParams(window.location.search);
-      const group = urlParams.get('g');
-      const rollNo = urlParams.get('r');
-      const token = urlParams.get('t');
-
-      if (!group || !rollNo || !token) {
-        showError("Invalid QR Code: Missing parameters.");
-        return;
-      }
-
-      const requestUrl = `${APPS_SCRIPT_URL}?g=${encodeURIComponent(group)}&r=${encodeURIComponent(rollNo)}&t=${encodeURIComponent(token)}`;
-
-      fetch(requestUrl)
-        .then(response => response.json())
-        .then(data => {
-          document.getElementById('loading').classList.add('hidden');
-
-          if (!data.success) {
-            showError(data.error || "Verification failed.");
-            return;
-          }
-
-          renderStudent(data.student, data.isExpired);
-        })
-        .catch(err => {
-          showError("Network error: Could not reach verification servers.");
-        });
-    });
-
-    function showError(msg) {
-      document.getElementById('loading').classList.add('hidden');
-      document.getElementById('error').classList.remove('hidden');
-      document.getElementById('error-message').textContent = msg;
+      return url;
     }
 
     function renderStudent(s, isExpired) {
@@ -496,8 +256,9 @@
       document.getElementById('validUpto').textContent = s.validUpto;
       document.getElementById('status').textContent = s.status;
 
-      if (s.photo && s.photo !== "N/A") {
-        document.getElementById('student-photo').src = s.photo;
+      const photoSrc = formatPhotoUrl(s.photo);
+      if (photoSrc) {
+        document.getElementById('student-photo').src = photoSrc;
       }
 
       document.getElementById('result').classList.remove('hidden');
