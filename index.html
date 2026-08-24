@@ -2,109 +2,114 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DDUC Student Verification</title>
     <style>
-        body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden; /* Prevents double scrollbars */
+        body {
+            font-family: "Segoe UI", -apple-system, sans-serif;
             background-color: #f1f5f9;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        }
-
-        /* Full screen iframe that hides the Google URL from Android */
-        #app-frame {
-            width: 100vw;
-            height: 100vh;
-            border: none;
-            position: relative;
-            z-index: 10;
-        }
-
-        /* Loading screen while Apps Script wakes up */
-        .loader-container {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            margin: 0;
+            padding: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            z-index: 1;
+            min-height: 100vh;
         }
-
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid #e2e8f0;
-            border-top: 4px solid #1e3877;
+        .card {
+            background-color: #ffffff;
+            max-width: 400px;
+            width: 100%;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            padding: 30px 20px;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+        }
+        .logo-placeholder {
+            width: 60px;
+            height: 60px;
+            background-color: #1e3877;
+            color: white;
             border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin: 0 auto 15px auto;
         }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        h1 {
+            color: #0f1626;
+            font-size: 20px;
+            margin: 0 0 10px 0;
         }
-
-        .loading-text {
+        p {
             color: #718096;
             font-size: 14px;
-            font-weight: 500;
+            margin: 0 0 25px 0;
+            line-height: 1.5;
+        }
+        .btn {
+            background-color: #1e3877;
+            color: #ffffff;
+            text-decoration: none;
+            padding: 14px 24px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 16px;
+            display: inline-block;
+            width: 80%;
+            box-sizing: border-box;
+            box-shadow: 0 4px 6px rgba(30, 56, 119, 0.2);
+            transition: background-color 0.2s;
+        }
+        .btn:active {
+            background-color: #0f1626;
+        }
+        #error-msg {
+            display: none;
+            color: #dc2626;
+            background-color: #fee2e2;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-top: 15px;
         }
     </style>
 </head>
 <body>
 
-    <!-- Loading UI -->
-    <div class="loader-container" id="loader">
-        <div class="spinner"></div>
-        <div class="loading-text">Verifying Record...</div>
+    <div class="card">
+        <div class="logo-placeholder">✓</div>
+        <h1>DDUC Verification</h1>
+        <p>You have scanned a secure student ID. Tap the button below to verify this record in your browser.</p>
+        
+        <!-- The target="_blank" forces Android to break out of the scanner app and open Chrome -->
+        <a id="verify-btn" href="#" class="btn" target="_blank">View ID Record</a>
+        
+        <div id="error-msg">Invalid QR Code scanned. No security token found.</div>
     </div>
 
-    <!-- The container for the Google Apps Script Web App -->
-    <iframe id="app-frame" allowfullscreen></iframe>
-
     <script>
-        // 1. Get the parameters passed by the QR code
         const urlParams = new URLSearchParams(window.location.search);
         const group = urlParams.get('g');
         const token = urlParams.get('t');
         
-        // 2. The exact URL to your deployed Apps Script Web App
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbw_NbCYX3mHW8fHV6cDKDOfOKVYyV5P8VegSEttj9gO5QzgRmE4L3TamSDkq3gR3B3PZw/exec";
-        
-        // 3. Your security lock parameter
         const authLock = "dduc_gh_auth_2026";
 
-        const iframe = document.getElementById('app-frame');
-        const loader = document.getElementById('loader');
+        const btn = document.getElementById('verify-btn');
+        const errorMsg = document.getElementById('error-msg');
 
         if (group && token) {
-            // Construct the secure URL
-            const fullUrl = `${WEB_APP_URL}?g=${encodeURIComponent(group)}&t=${encodeURIComponent(token)}&lock=${authLock}`;
-            
-            // Load the Google Script inside the iframe
-            iframe.src = fullUrl;
-
-            // Hide the loading spinner once the iframe has loaded
-            iframe.onload = function() {
-                loader.style.display = 'none';
-            };
+            // Construct the final backend URL and attach it directly to the button
+            btn.href = `${WEB_APP_URL}?g=${encodeURIComponent(group)}&t=${encodeURIComponent(token)}&lock=${authLock}`;
         } else {
-            // Handle cases where someone just visits the GitHub page directly without a QR code
-            loader.innerHTML = `
-                <div style="font-size: 40px; margin-bottom: 10px;">📷</div>
-                <div style="color: #c62828; font-weight: bold; font-size: 18px;">Scan Required</div>
-                <div style="color: #718096; font-size: 14px; margin-top: 5px;">Please scan an official student QR code.</div>
-            `;
+            // Disable button if scanned incorrectly
+            btn.style.display = 'none';
+            errorMsg.style.display = 'block';
         }
     </script>
+
 </body>
 </html>
