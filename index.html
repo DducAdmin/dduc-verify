@@ -58,14 +58,14 @@
     <!-- Loading Screen -->
     <div id="loader">
         <div class="spinner"></div>
-        <div style="color: #718096; font-weight: 500;">Connecting to secure database...</div>
+        <div style="color: #718096; font-weight: 500;">Verifying HMAC Signature...</div>
     </div>
 
     <!-- Error Screen -->
     <div id="error-msg">
-        <div style="font-size: 40px; margin-bottom: 10px;">❌</div>
+        <div style="font-size: 40px; margin-bottom: 10px;">🛡️</div>
         <h2>Verification Failed</h2>
-        <p id="error-text">Unauthorized access or record not found.</p>
+        <p id="error-text">Invalid security signature or record not found.</p>
     </div>
 
     <!-- The ID Card UI -->
@@ -90,7 +90,6 @@
                 <div class="detail-value" id="ui-name">--</div>
             </div>
             
-            <!-- Standard Fields -->
             <div id="standard-fields" style="display: contents;">
                 <div class="detail-box full-width">
                     <div class="detail-label">COURSE NAME</div>
@@ -138,7 +137,6 @@
                 </div>
             </div>
 
-            <!-- Status Box -->
             <div class="detail-box full-width" id="status-box">
                 <div class="detail-label" id="status-label">STATUS</div>
                 <div class="detail-value" id="ui-status" style="overflow-y: hidden;">--</div>
@@ -152,36 +150,27 @@
     </div>
     
     <script>
-        // --- 1. CONFIGURATION ---
-        // REPLACE THIS URL WITH YOUR NEWLY DEPLOYED MACRO URL
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzGOsd6HQqI7FGXG251UQ8lMzH01j87VKZtNbZOkAOuIeyJVO5_HKPWbepC6sF0wP7oRQ/exec";
         
-        // This must match the lock in your Code.gs
-        const authLock = "dduc_gh_auth_2026";
-        
-        // --- 2. EXTRACT QR DATA ---
         const urlParams = new URLSearchParams(window.location.search);
         const group = urlParams.get('g');
+        const rollNo = urlParams.get('r');
         const token = urlParams.get('t');
 
-        // --- 3. UI ELEMENTS ---
         const loader = document.getElementById('loader');
         const idCard = document.getElementById('id-card');
         const errorCard = document.getElementById('error-msg');
         const errorText = document.getElementById('error-text');
 
-        // --- 4. EXECUTION ---
-        if (!group || !token) {
-            showError("No security token was provided. Please scan a valid student QR code.");
+        if (!group || !rollNo || !token) {
+            showError("Invalid QR Code structure. Security tokens are missing.");
         } else {
             fetchData();
         }
 
-        // --- 5. SECURE BACKGROUND FETCH ---
         function fetchData() {
-            const requestUrl = `${WEB_APP_URL}?g=${encodeURIComponent(group)}&t=${encodeURIComponent(token)}&lock=${authLock}`;
+            const requestUrl = `${WEB_APP_URL}?g=${encodeURIComponent(group)}&r=${encodeURIComponent(rollNo)}&t=${encodeURIComponent(token)}`;
             
-            // Allow requests to pass through CORS securely
             fetch(requestUrl, { method: 'GET', redirect: 'follow' })
                 .then(response => response.json())
                 .then(data => {
@@ -194,11 +183,10 @@
                 })
                 .catch(err => {
                     loader.style.display = 'none';
-                    showError("Could not connect to the verification server. Please check your internet connection.");
+                    showError("Could not connect to the verification server. Please check network connection.");
                 });
         }
 
-        // --- 6. POPULATE UI ---
         function populateCard(data) {
             idCard.style.display = 'block';
             document.getElementById('meta-time').innerText = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
@@ -208,7 +196,6 @@
             document.getElementById('ui-group').innerText = data.groupName;
 
             if (data.isExpired) {
-                // Expired / Inactive UI
                 document.getElementById('banner-verified').style.display = 'none';
                 document.getElementById('banner-expired').style.display = 'flex';
                 document.getElementById('standard-fields').style.display = 'none';
@@ -220,7 +207,6 @@
                 document.getElementById('ui-status').style.color = '#dc2626';
                 document.getElementById('ui-status').innerText = 'EXPIRED / INVALID';
             } else {
-                // Active UI
                 if (student.photo && student.photo !== 'N/A') {
                     document.getElementById('ui-photo').src = student.photo;
                 } else {
@@ -244,7 +230,6 @@
             }
         }
 
-        // --- 7. ERROR HANDLER ---
         function showError(msg) {
             loader.style.display = 'none';
             idCard.style.display = 'none';
