@@ -3,15 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DDUC - Student Verification</title>
+  <title>Deen Dayal Upadhyaya College - Student ID Verification</title>
   <style>
     :root {
-      --primary: #003366;
-      --accent: #27ae60;
-      --danger: #c0392b;
-      --bg: #f4f6f9;
+      --header-bg: linear-gradient(180deg, #162a54 0%, #0d1b38 100%);
+      --bg: #eef2f6;
       --card-bg: #ffffff;
-      --text: #333333;
+      --border-color: #e2e8f0;
+      --text-main: #0f172a;
+      --text-label: #64748b;
+      --accent-blue: #1d4ed8;
+      --success-bg: #e6f4ea;
+      --success-text: #0d8a43;
+      --error-bg: #fde8e8;
+      --error-text: #e02424;
     }
 
     * {
@@ -23,7 +28,7 @@
 
     body {
       background-color: var(--bg);
-      color: var(--text);
+      color: var(--text-main);
       display: flex;
       justify-content: center;
       align-items: center;
@@ -33,46 +38,139 @@
 
     .container {
       width: 100%;
-      max-width: 480px;
+      max-width: 440px;
       background: var(--card-bg);
       border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
       overflow: hidden;
+      border: 1px solid #dbe2ea;
     }
 
+    /* Header */
     .header {
-      background: var(--primary);
+      background: var(--header-bg);
       color: white;
       text-align: center;
-      padding: 20px 16px;
+      padding: 18px 16px;
     }
 
     .header h1 {
-      font-size: 1.25rem;
-      font-weight: 700;
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
       margin-bottom: 4px;
     }
 
     .header p {
+      font-size: 0.82rem;
+      color: #93c5fd;
+      font-weight: 500;
+    }
+
+    /* Verification Banner */
+    .status-banner {
+      padding: 10px;
+      text-align: center;
       font-size: 0.85rem;
-      opacity: 0.85;
+      font-weight: 700;
+      letter-spacing: 0.3px;
     }
 
+    .banner-verified {
+      background: var(--success-bg);
+      color: var(--success-text);
+    }
+
+    .banner-failed {
+      background: var(--error-bg);
+      color: var(--error-text);
+    }
+
+    /* Content Area */
     .content {
-      padding: 24px 20px;
+      padding: 16px 18px;
     }
 
+    /* Photo Styling */
+    .photo-wrapper {
+      text-align: center;
+      margin: 8px 0 18px 0;
+    }
+
+    .photo-wrapper img {
+      width: 105px;
+      height: 125px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 2px solid #ffffff;
+      box-shadow: 0 0 14px rgba(239, 68, 68, 0.35); /* Subtle glowing border effect */
+    }
+
+    /* Field Card Styling */
+    .field-card {
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 8px 12px;
+      background: #ffffff;
+      margin-bottom: 8px;
+    }
+
+    .field-label {
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--text-label);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      margin-bottom: 2px;
+    }
+
+    .field-val {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: var(--text-main);
+      word-break: break-word;
+    }
+
+    .grid-2col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    /* Footer */
+    .card-footer {
+      background: #f8fafc;
+      border-top: 1px solid var(--border-color);
+      padding: 12px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.78rem;
+      color: #64748b;
+    }
+
+    .footer-group {
+      font-weight: 500;
+    }
+
+    .footer-group span {
+      color: var(--accent-blue);
+      font-weight: 700;
+    }
+
+    /* Loader / States */
     .state-box {
       text-align: center;
-      padding: 30px 10px;
+      padding: 40px 10px;
     }
 
     .spinner {
       border: 4px solid rgba(0,0,0,0.1);
-      border-top: 4px solid var(--primary);
+      border-top: 4px solid #162a54;
       border-radius: 50%;
-      width: 40px;
-      height: 40px;
+      width: 36px;
+      height: 36px;
       animation: spin 1s linear infinite;
       margin: 0 auto 16px;
     }
@@ -82,62 +180,7 @@
       100% { transform: rotate(360deg); }
     }
 
-    .status-badge {
-      display: inline-block;
-      padding: 6px 16px;
-      border-radius: 20px;
-      font-weight: 600;
-      font-size: 0.9rem;
-      margin-bottom: 20px;
-    }
-
-    .badge-valid { background: #e8f8f0; color: var(--accent); border: 1px solid #a3e4d7; }
-    .badge-invalid { background: #fadbd8; color: var(--danger); border: 1px solid #f5b7b1; }
-
-    .photo-wrapper {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    .photo-wrapper img {
-      width: 110px;
-      height: 130px;
-      object-fit: cover;
-      border-radius: 8px;
-      border: 2px solid #ddd;
-    }
-
-    .details-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.9rem;
-    }
-
-    .details-table tr {
-      border-bottom: 1px solid #edf2f7;
-    }
-
-    .details-table tr:last-child {
-      border-bottom: none;
-    }
-
-    .details-table td {
-      padding: 10px 4px;
-      vertical-align: top;
-    }
-
-    .details-table td.label {
-      font-weight: 600;
-      color: #666;
-      width: 40%;
-    }
-
-    .details-table td.val {
-      color: #111;
-      font-weight: 500;
-    }
-
-    .hidden { display: none; }
+    .hidden { display: none !important; }
   </style>
 </head>
 <body>
@@ -145,42 +188,115 @@
   <div class="container">
     <div class="header">
       <h1>Deen Dayal Upadhyaya College</h1>
-      <p>University of Delhi • Verification Portal</p>
+      <p>University of Delhi - Student ID Verification</p>
     </div>
 
-    <div class="content">
-      <!-- Loading State -->
-      <div id="loading" class="state-box">
-        <div class="spinner"></div>
-        <p>Verifying HMAC signature...</p>
-      </div>
+    <!-- Loading State -->
+    <div id="loading" class="state-box">
+      <div class="spinner"></div>
+      <p style="font-size: 0.9rem; color: #64748b;">Verifying student record...</p>
+    </div>
 
-      <!-- Error State -->
-      <div id="error" class="state-box hidden">
-        <div class="status-badge badge-invalid">VERIFICATION FAILED</div>
-        <p id="error-message" style="color: var(--danger); font-weight: 500;"></p>
+    <!-- Error State -->
+    <div id="error" class="hidden">
+      <div class="status-banner banner-failed">● VERIFICATION FAILED</div>
+      <div class="state-box">
+        <p id="error-message" style="color: var(--error-text); font-weight: 600;"></p>
       </div>
+    </div>
 
-      <!-- Result State -->
-      <div id="result" class="hidden">
-        <div style="text-align: center;">
-          <div id="badge" class="status-badge"></div>
+    <!-- Verified Result State -->
+    <div id="result" class="hidden">
+      <div id="status-banner" class="status-banner banner-verified">● VERIFIED STUDENT RECORD</div>
+
+      <div class="content">
+        <div class="photo-wrapper">
+          <img id="student-photo" src="" alt="Student Photo" onerror="this.src='https://via.placeholder.com/105x125?text=No+Photo'">
         </div>
 
-        <div class="photo-wrapper" id="photo-container">
-          <img id="student-photo" src="" alt="Student Photo" onerror="this.src='https://via.placeholder.com/110x130?text=No+Photo'">
+        <!-- Student Name -->
+        <div class="field-card">
+          <div class="field-label">Student Name</div>
+          <div class="field-val" id="name">-</div>
         </div>
 
-        <table class="details-table">
-          <tr><td class="label">Full Name</td><td class="val" id="name"></td></tr>
-          <tr><td class="label">Course</td><td class="val" id="course"></td></tr>
-          <tr><td class="label">College Roll No</td><td class="val" id="rollNo"></td></tr>
-          <tr><td class="label">Exam Roll No</td><td class="val" id="examRollNo"></td></tr>
-          <tr><td class="label">Admission Year</td><td class="val" id="admissionYear"></td></tr>
-          <tr><td class="label">Institutional Email</td><td class="val" id="email"></td></tr>
-          <tr><td class="label">Valid Upto</td><td class="val" id="validUpto"></td></tr>
-          <tr><td class="label">Status</td><td class="val" id="status"></td></tr>
-        </table>
+        <!-- Course Name -->
+        <div class="field-card">
+          <div class="field-label">Course Name</div>
+          <div class="field-val" id="course">-</div>
+        </div>
+
+        <!-- Roll Numbers -->
+        <div class="grid-2col">
+          <div class="field-card">
+            <div class="field-label">College Roll No.</div>
+            <div class="field-val" id="rollNo">-</div>
+          </div>
+          <div class="field-card">
+            <div class="field-label">Exam Roll No.</div>
+            <div class="field-val" id="examRollNo">-</div>
+          </div>
+        </div>
+
+        <!-- DOB & Admission -->
+        <div class="grid-2col">
+          <div class="field-card">
+            <div class="field-label">Date of Birth</div>
+            <div class="field-val" id="dob">-</div>
+          </div>
+          <div class="field-card">
+            <div class="field-label">Admission Year</div>
+            <div class="field-val" id="admissionYear">-</div>
+          </div>
+        </div>
+
+        <!-- Mobile & Email -->
+        <div class="grid-2col">
+          <div class="field-card">
+            <div class="field-label">Student's Mobile No.</div>
+            <div class="field-val" id="studentMobile">-</div>
+          </div>
+          <div class="field-card">
+            <div class="field-label">Institutional Email</div>
+            <div class="field-val" id="email" style="font-size: 0.82rem;">-</div>
+          </div>
+        </div>
+
+        <!-- Father Details -->
+        <div class="grid-2col">
+          <div class="field-card">
+            <div class="field-label">Father's Name</div>
+            <div class="field-val" id="fatherName">-</div>
+          </div>
+          <div class="field-card">
+            <div class="field-label">Father's Mobile</div>
+            <div class="field-val" id="fatherMobile">-</div>
+          </div>
+        </div>
+
+        <!-- Local Address -->
+        <div class="field-card">
+          <div class="field-label">Local Address</div>
+          <div class="field-val" id="localAddress">-</div>
+        </div>
+
+        <!-- Validity & Status -->
+        <div class="grid-2col">
+          <div class="field-card">
+            <div class="field-label">Valid Upto</div>
+            <div class="field-val" id="validUpto">-</div>
+          </div>
+          <div class="field-card">
+            <div class="field-label">Status</div>
+            <div class="field-val" id="status" style="color: #0d8a43;">✓ Active</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer Bar -->
+      <div class="card-footer">
+        <div class="footer-group">Group: <span id="group-name">Original</span></div>
+        <div id="scan-time">Scanned: --:--:--</div>
       </div>
     </div>
   </div>
@@ -195,17 +311,18 @@
       const token = urlParams.get('t');
 
       if (!group || !rollNo || !token) {
-        showError("Invalid QR Code: Missing parameters.");
+        showError("Invalid parameters provided in QR link.");
         return;
       }
+
+      // Record current scan timestamp
+      const now = new Date();
+      document.getElementById('scan-time').textContent = `Scanned: ${now.toLocaleTimeString()}`;
 
       const requestUrl = `${APPS_SCRIPT_URL}?g=${encodeURIComponent(group)}&r=${encodeURIComponent(rollNo)}&t=${encodeURIComponent(token)}`;
 
       fetch(requestUrl)
-        .then(response => {
-          if (!response.ok) throw new Error("HTTP error " + response.status);
-          return response.json();
-        })
+        .then(response => response.json())
         .then(data => {
           document.getElementById('loading').classList.add('hidden');
 
@@ -214,10 +331,10 @@
             return;
           }
 
-          renderStudent(data.student, data.isExpired);
+          renderStudent(data.student, data.groupName, data.isExpired);
         })
         .catch(err => {
-          showError("Network error: Could not reach verification servers.");
+          showError("Network error: Verification server unreachable.");
         });
     });
 
@@ -229,7 +346,6 @@
 
     function formatPhotoUrl(url) {
       if (!url || url === "N/A") return "";
-      // Converts Google Drive view URLs to direct thumbnail links
       const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/);
       if (match && match[1]) {
         return `https://drive.google.com/thumbnail?id=${match[1]}&sz=s400`;
@@ -237,24 +353,35 @@
       return url;
     }
 
-    function renderStudent(s, isExpired) {
-      const badge = document.getElementById('badge');
+    function renderStudent(s, groupName, isExpired) {
+      const banner = document.getElementById('status-banner');
+      const statusElement = document.getElementById('status');
+
       if (isExpired) {
-        badge.className = "status-badge badge-invalid";
-        badge.textContent = "EXPIRED RECORD";
+        banner.className = "status-banner banner-failed";
+        banner.textContent = "● EXPIRED STUDENT RECORD";
+        statusElement.textContent = "✕ Expired";
+        statusElement.style.color = "#c0392b";
       } else {
-        badge.className = "status-badge badge-valid";
-        badge.textContent = "VERIFIED OFFICIAL ID";
+        banner.className = "status-banner banner-verified";
+        banner.textContent = "● VERIFIED STUDENT RECORD";
+        statusElement.textContent = `✓ ${s.status || 'Active'}`;
+        statusElement.style.color = "#0d8a43";
       }
 
       document.getElementById('name').textContent = s.name;
       document.getElementById('course').textContent = s.courseName;
       document.getElementById('rollNo').textContent = s.rollNo;
       document.getElementById('examRollNo').textContent = s.examRollNo;
+      document.getElementById('dob').textContent = s.dob;
       document.getElementById('admissionYear').textContent = s.yearOfAdmission;
+      document.getElementById('studentMobile').textContent = s.studentMobile;
       document.getElementById('email').textContent = s.institutionalEmail;
+      document.getElementById('fatherName').textContent = s.fatherName;
+      document.getElementById('fatherMobile').textContent = s.fatherMobile;
+      document.getElementById('localAddress').textContent = s.localAddress;
       document.getElementById('validUpto').textContent = s.validUpto;
-      document.getElementById('status').textContent = s.status;
+      document.getElementById('group-name').textContent = groupName || "Original";
 
       const photoSrc = formatPhotoUrl(s.photo);
       if (photoSrc) {
