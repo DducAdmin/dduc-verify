@@ -2,114 +2,255 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DDUC Student Verification</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Student ID Verification</title>
     <style>
-        body {
-            font-family: "Segoe UI", -apple-system, sans-serif;
-            background-color: #f1f5f9;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
+        :root {
+            --bg-page: #f1f5f9; --card-bg: #ffffff; --header-dark: #0f1626;
+            --header-blue: #1e3877; --header-light-text: #8fb0ff; --verified-bg: #eaf6ee;
+            --verified-text: #059669; --border-color: #e2e8f0; --label-color: #718096;
+            --value-color: #1a202c;
         }
-        .card {
-            background-color: #ffffff;
-            max-width: 400px;
-            width: 100%;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-            padding: 30px 20px;
-            text-align: center;
-            border: 1px solid #e2e8f0;
-        }
-        .logo-placeholder {
-            width: 60px;
-            height: 60px;
-            background-color: #1e3877;
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            margin: 0 auto 15px auto;
-        }
-        h1 {
-            color: #0f1626;
-            font-size: 20px;
-            margin: 0 0 10px 0;
-        }
-        p {
-            color: #718096;
-            font-size: 14px;
-            margin: 0 0 25px 0;
-            line-height: 1.5;
-        }
-        .btn {
-            background-color: #1e3877;
-            color: #ffffff;
-            text-decoration: none;
-            padding: 14px 24px;
-            border-radius: 8px;
-            font-weight: 700;
-            font-size: 16px;
-            display: inline-block;
-            width: 80%;
-            box-sizing: border-box;
-            box-shadow: 0 4px 6px rgba(30, 56, 119, 0.2);
-            transition: background-color 0.2s;
-        }
-        .btn:active {
-            background-color: #0f1626;
-        }
-        #error-msg {
-            display: none;
-            color: #dc2626;
-            background-color: #fee2e2;
-            padding: 10px;
-            border-radius: 8px;
-            font-size: 14px;
-            margin-top: 15px;
-        }
+
+        body { font-family: "Segoe UI", -apple-system, sans-serif; background-color: var(--bg-page); margin: 0; padding: 30px 15px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; min-height: 100vh; box-sizing: border-box; }
+        @media print { body { display: none !important; } }
+
+        .id-card { background-color: var(--card-bg); max-width: 500px; width: 100%; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); overflow: hidden; border: 1px solid #e2e8f0; display: none; }
+        
+        .header { background: linear-gradient(90deg, var(--header-dark) 0%, var(--header-blue) 100%); padding: 20px; text-align: center; }
+        .header h1 { color: #ffffff; margin: 0 0 6px 0; font-size: 18px; font-weight: 700; }
+        .header p { color: var(--header-light-text); margin: 0; font-size: 12px; font-weight: 500; }
+        
+        .banner { text-align: center; padding: 10px; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 6px; }
+        .banner-verified { background-color: var(--verified-bg); color: var(--verified-text); border-bottom: 1px solid #d1fae5; }
+        .banner-expired { background-color: #fee2e2; color: #dc2626; border-bottom: 1px solid #fecaca; }
+        .dot { width: 8px; height: 8px; background-color: var(--verified-text); border-radius: 50%; display: inline-block; }
+        
+        .photo-section { display: flex; justify-content: center; padding: 20px 0 10px 0; }
+        .photo-container { width: 95px; height: 120px; border-radius: 8px; border: 3px solid #ffffff; box-shadow: 0 4px 8px rgba(0,0,0,0.12); overflow: hidden; background-color: #e2e8f0; position: relative; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #718096; text-align: center;}
+        .photo-container img { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; }
+        
+        .details-container { padding: 10px 20px 20px 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .detail-box { border: 1px solid var(--border-color); border-radius: 8px; padding: 8px 12px; background-color: #ffffff; }
+        .full-width { grid-column: span 2; }
+        .detail-label { font-size: 10px; font-weight: 700; color: var(--label-color); text-transform: uppercase; margin-bottom: 3px; }
+        .detail-value { font-size: 13px; font-weight: 700; color: var(--value-color); word-break: break-word; max-height: 80px; overflow-y: auto; }
+        .detail-value::-webkit-scrollbar { width: 4px; }
+        .detail-value::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        
+        .footer { background-color: #f8fafc; border-top: 1px solid var(--border-color); padding: 12px 20px; display: flex; justify-content: space-between; font-size: 12px; color: var(--label-color); font-weight: 500; }
+        .footer .highlight { color: #1d4ed8; font-weight: 700; }
+
+        @media (max-width: 480px) { body { padding: 10px 5px; } .details-container { grid-template-columns: 1fr; padding: 10px 12px 15px 12px; } .full-width { grid-column: span 1; } }
+
+        /* Loader & Error Styles */
+        #loader { display: flex; flex-direction: column; align-items: center; margin-top: 50px; }
+        .spinner { width: 40px; height: 40px; border: 4px solid #e2e8f0; border-top: 4px solid #1e3877; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 16px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        #error-msg { display: none; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); text-align: center; max-width: 400px; width: 100%; border: 1px solid #fecaca; }
+        #error-msg h2 { color: #dc2626; margin: 0 0 10px 0; }
+        #error-msg p { color: #555; margin: 0; }
     </style>
 </head>
 <body>
 
-    <div class="card">
-        <div class="logo-placeholder">✓</div>
-        <h1>DDUC Verification</h1>
-        <p>You have scanned a secure student ID. Tap the button below to verify this record in your browser.</p>
-        
-        <!-- The target="_blank" forces Android to break out of the scanner app and open Chrome -->
-        <a id="verify-btn" href="#" class="btn" target="_blank">View ID Record</a>
-        
-        <div id="error-msg">Invalid QR Code scanned. No security token found.</div>
+    <!-- Loading Screen -->
+    <div id="loader">
+        <div class="spinner"></div>
+        <div style="color: #718096; font-weight: 500;">Connecting to secure database...</div>
     </div>
 
+    <!-- Error Screen -->
+    <div id="error-msg">
+        <div style="font-size: 40px; margin-bottom: 10px;">❌</div>
+        <h2>Verification Failed</h2>
+        <p id="error-text">Unauthorized access or record not found.</p>
+    </div>
+
+    <!-- The ID Card UI -->
+    <div class="id-card" id="id-card">
+        <div class="header">
+            <h1>DEEN DAYAL UPADHYAYA COLLEGE</h1>
+            <p>University of Delhi - Student ID Verification</p>
+        </div>
+
+        <div id="banner-verified" class="banner banner-verified"><span class="dot"></span> VERIFIED STUDENT RECORD</div>
+        <div id="banner-expired" class="banner banner-expired" style="display:none;">❌ THIS ID CARD IS EXPIRED</div>
+
+        <div class="photo-section">
+            <div class="photo-container" id="photo-box">
+                <img id="ui-photo" src="" alt="Student Photo" onerror="this.onerror=null; this.src='https://placehold.co/100x125/f8fafc/a0aec0?text=No+Photo';">
+            </div>
+        </div>
+
+        <div class="details-container">
+            <div class="detail-box full-width">
+                <div class="detail-label">STUDENT NAME</div>
+                <div class="detail-value" id="ui-name">--</div>
+            </div>
+            
+            <!-- Standard Fields -->
+            <div id="standard-fields" style="display: contents;">
+                <div class="detail-box full-width">
+                    <div class="detail-label">COURSE NAME</div>
+                    <div class="detail-value" id="ui-course">--</div>
+                </div>
+                <div class="detail-box">
+                    <div class="detail-label">COLLEGE ROLL NO.</div>
+                    <div class="detail-value" id="ui-roll">--</div>
+                </div>
+                <div class="detail-box">
+                    <div class="detail-label">EXAM ROLL NO.</div>
+                    <div class="detail-value" id="ui-exam">--</div>
+                </div>
+                <div class="detail-box">
+                    <div class="detail-label">DATE OF BIRTH</div>
+                    <div class="detail-value" id="ui-dob">--</div>
+                </div>
+                <div class="detail-box">
+                    <div class="detail-label">ADMISSION YEAR</div>
+                    <div class="detail-value" id="ui-year">--</div>
+                </div>
+                <div class="detail-box">
+                    <div class="detail-label">STUDENT'S MOBILE NO.</div>
+                    <div class="detail-value" id="ui-mobile">--</div>
+                </div>
+                <div class="detail-box">
+                    <div class="detail-label">INSTITUTIONAL EMAIL</div>
+                    <div class="detail-value" id="ui-email" style="font-size: 11px; word-break: break-all;">--</div>
+                </div>
+                <div class="detail-box">
+                    <div class="detail-label">FATHER'S NAME</div>
+                    <div class="detail-value" id="ui-father-name">--</div>
+                </div>
+                <div class="detail-box">
+                    <div class="detail-label">FATHER'S MOBILE</div>
+                    <div class="detail-value" id="ui-father-mobile">--</div>
+                </div>
+                <div class="detail-box full-width">
+                    <div class="detail-label">LOCAL ADDRESS</div>
+                    <div class="detail-value" id="ui-address">--</div>
+                </div>
+                <div class="detail-box">
+                    <div class="detail-label">VALID UPTO</div>
+                    <div class="detail-value" id="ui-valid">--</div>
+                </div>
+            </div>
+
+            <!-- Status Box -->
+            <div class="detail-box full-width" id="status-box">
+                <div class="detail-label" id="status-label">STATUS</div>
+                <div class="detail-value" id="ui-status" style="overflow-y: hidden;">--</div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <div>Group: <span class="highlight" id="ui-group">--</span></div>
+            <div>Scanned: <span id="meta-time">--:--</span></div>
+        </div>
+    </div>
+    
     <script>
+        // --- 1. CONFIGURATION ---
+        // REPLACE THIS URL WITH YOUR NEWLY DEPLOYED MACRO URL
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyk5fePuNm78PnIm3MyujLkcFPD0AFmIAJbj0zsBoUgoB5_vLJnx1NDFbXdvjIoE6EWwQ/exec";
+        
+        // This must match the lock in your Code.gs
+        const authLock = "dduc_gh_auth_2026";
+        
+        // --- 2. EXTRACT QR DATA ---
         const urlParams = new URLSearchParams(window.location.search);
         const group = urlParams.get('g');
         const token = urlParams.get('t');
-        
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbw_NbCYX3mHW8fHV6cDKDOfOKVYyV5P8VegSEttj9gO5QzgRmE4L3TamSDkq3gR3B3PZw/exec";
-        const authLock = "dduc_gh_auth_2026";
 
-        const btn = document.getElementById('verify-btn');
-        const errorMsg = document.getElementById('error-msg');
+        // --- 3. UI ELEMENTS ---
+        const loader = document.getElementById('loader');
+        const idCard = document.getElementById('id-card');
+        const errorCard = document.getElementById('error-msg');
+        const errorText = document.getElementById('error-text');
 
-        if (group && token) {
-            // Construct the final backend URL and attach it directly to the button
-            btn.href = `${WEB_APP_URL}?g=${encodeURIComponent(group)}&t=${encodeURIComponent(token)}&lock=${authLock}`;
+        // --- 4. EXECUTION ---
+        if (!group || !token) {
+            showError("No security token was provided. Please scan a valid student QR code.");
         } else {
-            // Disable button if scanned incorrectly
-            btn.style.display = 'none';
-            errorMsg.style.display = 'block';
+            fetchData();
+        }
+
+        // --- 5. SECURE BACKGROUND FETCH ---
+        function fetchData() {
+            const requestUrl = `${WEB_APP_URL}?g=${encodeURIComponent(group)}&t=${encodeURIComponent(token)}&lock=${authLock}`;
+            
+            // Allow requests to pass through CORS securely
+            fetch(requestUrl, { method: 'GET', redirect: 'follow' })
+                .then(response => response.json())
+                .then(data => {
+                    loader.style.display = 'none';
+                    if (data.success) {
+                        populateCard(data);
+                    } else {
+                        showError(data.error);
+                    }
+                })
+                .catch(err => {
+                    loader.style.display = 'none';
+                    showError("Could not connect to the verification server. Please check your internet connection.");
+                });
+        }
+
+        // --- 6. POPULATE UI ---
+        function populateCard(data) {
+            idCard.style.display = 'block';
+            document.getElementById('meta-time').innerText = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            
+            const student = data.student;
+            document.getElementById('ui-name').innerText = student.name;
+            document.getElementById('ui-group').innerText = data.groupName;
+
+            if (data.isExpired) {
+                // Expired / Inactive UI
+                document.getElementById('banner-verified').style.display = 'none';
+                document.getElementById('banner-expired').style.display = 'flex';
+                document.getElementById('standard-fields').style.display = 'none';
+                
+                document.getElementById('photo-box').innerHTML = 'Photo Hidden';
+                document.getElementById('status-box').style.backgroundColor = '#fff5f5';
+                document.getElementById('status-box').style.borderColor = '#fecaca';
+                document.getElementById('status-label').style.color = '#dc2626';
+                document.getElementById('ui-status').style.color = '#dc2626';
+                document.getElementById('ui-status').innerText = 'EXPIRED / INVALID';
+            } else {
+                // Active UI
+                if (student.photo && student.photo !== 'N/A') {
+                    document.getElementById('ui-photo').src = student.photo;
+                } else {
+                    document.getElementById('photo-box').innerHTML = 'No Photo Found';
+                }
+
+                document.getElementById('ui-course').innerText = student.courseName;
+                document.getElementById('ui-roll').innerText = student.rollNo;
+                document.getElementById('ui-exam').innerText = student.examRollNo;
+                document.getElementById('ui-dob').innerText = student.dob;
+                document.getElementById('ui-year').innerText = student.yearOfAdmission;
+                document.getElementById('ui-mobile').innerText = student.studentMobile;
+                document.getElementById('ui-email').innerText = student.institutionalEmail;
+                document.getElementById('ui-father-name').innerText = student.fatherName;
+                document.getElementById('ui-father-mobile').innerText = student.fatherMobile;
+                document.getElementById('ui-address').innerText = student.localAddress;
+                document.getElementById('ui-valid').innerText = student.validUpto;
+                
+                document.getElementById('ui-status').innerText = '✓ ' + student.status;
+                document.getElementById('ui-status').style.color = '#059669';
+            }
+        }
+
+        // --- 7. ERROR HANDLER ---
+        function showError(msg) {
+            loader.style.display = 'none';
+            idCard.style.display = 'none';
+            errorCard.style.display = 'block';
+            errorText.innerText = msg;
         }
     </script>
-
 </body>
 </html>
