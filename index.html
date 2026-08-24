@@ -4,51 +4,41 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DDUC ID Verification</title>
-    
-    <!-- FIX 1: Meta Refresh Redirect (Bypasses JavaScript blocks in Scanners) -->
+    <style>
+        body { margin: 0; background: #f1f5f9; font-family: -apple-system, sans-serif; overflow: hidden; }
+        /* Pushes the Google banner up and out of view */
+        iframe { width: 100%; height: calc(100vh + 36px); border: none; margin-top: -36px; display: block; }
+        
+        /* Floating fallback for strict mobile scanners */
+        .scanner-fallback { position: fixed; bottom: 0; left: 0; width: 100%; background: #0f1626; padding: 15px 0; text-align: center; box-shadow: 0 -4px 10px rgba(0,0,0,0.1); z-index: 9999; }
+        .scanner-fallback span { color: white; font-size: 13px; margin-right: 10px; }
+        .btn { background: #ffffff; color: #1e3877; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 13px; }
+    </style>
+</head>
+<body>
+
+    <div class="scanner-fallback">
+        <span>Screen blank or stuck?</span>
+        <a id="direct-link" href="#" class="btn" target="_blank">Open ID Natively</a>
+    </div>
+
+    <iframe id="app-frame" src=""></iframe>
+
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         const g = urlParams.get('g') || '';
         const t = urlParams.get('t') || '';
+        
+        // Ensure this is your NEW DU Web App URL
         const webAppUrl = "https://script.google.com/macros/s/AKfycbyk5fePuNm78PnIm3MyujLkcFPD0AFmIAJbj0zsBoUgoB5_vLJnx1NDFbXdvjIoE6EWwQ/exec";
         const secretLockKey = "dduc_gh_auth_2026";
-        
-        let targetUrl = "";
-        if (g && t) {
-            targetUrl = webAppUrl + "?g=" + encodeURIComponent(g) + "&t=" + encodeURIComponent(t) + "&lock=" + secretLockKey;
-            document.write('<meta http-equiv="refresh" content="0;url=' + targetUrl + '">');
-        }
-    </script>
 
-    <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #f1f5f9; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); text-align: center; max-width: 320px; width: 90%; }
-        .spinner { width: 36px; height: 36px; border: 4px solid #cbd5e1; border-top: 4px solid #1e3877; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 15px; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .btn { display: inline-block; margin-top: 15px; padding: 12px 20px; background: #1e3877; color: white; text-decoration: none; border-radius: 6px; font-size: 14px; font-weight: bold; width: 80%; box-sizing: border-box; }
-    </style>
-</head>
-<body>
-    <div class="card" id="status-card">
-        <div class="spinner"></div>
-        <div style="color:#1e3877; font-weight:600; font-size: 15px;">Verifying Student Record...</div>
-    </div>
-
-    <!-- FIX 2: JavaScript Redirect & Fallback Button -->
-    <script>
         if (g && t) {
-            // Attempt standard JS redirect
-            window.location.href = targetUrl;
-            
-            // If the scanner blocks the auto-redirect for 1.5 seconds, show a button
-            setTimeout(() => {
-                document.getElementById('status-card').innerHTML = 
-                    `<div style="color:#1e3877; font-weight:700; font-size:16px; margin-bottom:10px;">Security Scan Complete</div>` +
-                    `<p style="font-size:13px; color:#555; margin-bottom: 20px;">Please click the button below to view the verified ID card in your browser.</p>` +
-                    `<a href="${targetUrl}" class="btn" target="_blank">Open ID Card</a>`;
-            }, 1500);
+            const targetUrl = webAppUrl + "?g=" + encodeURIComponent(g) + "&t=" + encodeURIComponent(t) + "&lock=" + secretLockKey;
+            document.getElementById('app-frame').src = targetUrl;
+            document.getElementById('direct-link').href = targetUrl;
         } else {
-            document.getElementById('status-card').innerHTML = "<div style='color:#c62828; font-weight:bold;'>❌ Invalid QR Code Scan. Missing secure parameters.</div>";
+            document.body.innerHTML = "<h3 style='text-align:center; color:#c62828; margin-top:50px;'>❌ Invalid QR Scan</h3>";
         }
     </script>
 </body>
