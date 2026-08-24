@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Deen Dayal Upadhyaya College - Student ID Digital Verification System">
   <title>Deen Dayal Upadhyaya College - Student ID Verification</title>
   <style>
     :root {
@@ -100,7 +101,7 @@
       object-fit: cover;
       border-radius: 8px;
       border: 2px solid #ffffff;
-      box-shadow: 0 0 14px rgba(239, 68, 68, 0.35);
+      box-shadow: 0 0 14px rgba(0, 0, 0, 0.15);
     }
 
     .field-card {
@@ -155,7 +156,7 @@
 
     .state-box {
       text-align: center;
-      padding: 40px 10px;
+      padding: 40px 18px;
     }
 
     .spinner {
@@ -178,20 +179,20 @@
 </head>
 <body>
 
-  <div class="container">
-    <div class="header">
+  <main class="container">
+    <header class="header">
       <h1>Deen Dayal Upadhyaya College</h1>
       <p>University of Delhi - Student ID Verification</p>
-    </div>
+    </header>
 
     <!-- Loading State -->
-    <div id="loading" class="state-box">
+    <div id="loading" class="state-box" aria-live="polite">
       <div class="spinner"></div>
       <p style="font-size: 0.9rem; color: #64748b;">Verifying student record...</p>
     </div>
 
     <!-- Error State -->
-    <div id="error" class="hidden">
+    <div id="error" class="hidden" aria-live="assertive">
       <div class="status-banner banner-failed">● VERIFICATION FAILED</div>
       <div class="state-box">
         <p id="error-message" style="color: var(--error-text); font-weight: 600;"></p>
@@ -199,12 +200,12 @@
     </div>
 
     <!-- Verified Result State -->
-    <div id="result" class="hidden">
+    <div id="result" class="hidden" aria-live="polite">
       <div id="status-banner" class="status-banner banner-verified">● VERIFIED STUDENT RECORD</div>
 
       <div class="content">
         <div class="photo-wrapper">
-          <img id="student-photo" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='105' height='125' viewBox='0 0 105 125'><rect width='100%' height='100%' fill='%23cbd5e1'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='%2364748b' font-size='12' font-family='sans-serif'>No Photo</text></svg>" alt="Student Photo" decoding="async">
+          <img id="student-photo" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='105' height='125' viewBox='0 0 105 125'><rect width='100%' height='100%' fill='%23cbd5e1'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='%2364748b' font-size='12' font-family='sans-serif'>No Photo</text></svg>" alt="Student Photo">
         </div>
 
         <div class="field-card">
@@ -283,10 +284,10 @@
         <div id="scan-time">Scanned: --:--:--</div>
       </div>
     </div>
-  </div>
+  </main>
 
   <script>
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz87Fn67uHM382HviICOwOL0MPYpdsQyd0EMbpMawbrjh74zK3NICsFs_O8DX2k6-BfOQ/exec";
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyt4CiA-Rb4M28tXtZBQj8d_PV0Mm34Ao3hp5Y_Hn3W4qw5ywwhTATJbdAbkkGh661Vpg/exec";
     const DEFAULT_SVG = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='105' height='125' viewBox='0 0 105 125'><rect width='100%' height='100%' fill='%23cbd5e1'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='%2364748b' font-size='12' font-family='sans-serif'>No Photo</text></svg>";
 
     document.addEventListener("DOMContentLoaded", function () {
@@ -332,7 +333,10 @@
       const requestUrl = `${APPS_SCRIPT_URL}?g=${encodeURIComponent(group)}&r=${encodeURIComponent(rollNo)}&t=${encodeURIComponent(token)}`;
 
       fetch(requestUrl, { signal: controller.signal })
-        .then(res => res.json())
+        .then(res => {
+          if (!res.ok) throw new Error("Server error");
+          return res.json();
+        })
         .then(data => {
           clearTimeout(timeoutId);
           els.loading.classList.add('hidden');
@@ -342,7 +346,7 @@
             return;
           }
 
-          renderStudent(els, data.student, data.groupName, data.isExpired);
+          renderStudent(els, data.student || {}, data.groupName, data.isExpired);
         })
         .catch(err => {
           clearTimeout(timeoutId);
@@ -361,8 +365,11 @@
 
     function formatPhotoUrl(url) {
       if (!url || url === "N/A") return "";
+      if (url.startsWith("data:image/") || url.includes("drive.google.com/thumbnail")) {
+        return url;
+      }
       const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/);
-      return match && match[1] ? `https://lh3.googleusercontent.com/d/${match[1]}=s400` : url;
+      return match && match[1] ? `https://drive.google.com/thumbnail?id=${match[1]}&sz=w400` : url;
     }
 
     function renderStudent(els, s, groupName, isExpired) {
@@ -378,18 +385,18 @@
         els.status.style.color = "#0d8a43";
       }
 
-      els.name.textContent = s.name;
-      els.course.textContent = s.courseName;
-      els.rollNo.textContent = s.rollNo;
-      els.examRollNo.textContent = s.examRollNo;
-      els.dob.textContent = s.dob;
-      els.admissionYear.textContent = s.yearOfAdmission;
-      els.studentMobile.textContent = s.studentMobile;
-      els.email.textContent = s.institutionalEmail;
-      els.fatherName.textContent = s.fatherName;
-      els.fatherMobile.textContent = s.fatherMobile;
-      els.localAddress.textContent = s.localAddress;
-      els.validUpto.textContent = s.validUpto;
+      els.name.textContent = s.name || '-';
+      els.course.textContent = s.courseName || '-';
+      els.rollNo.textContent = s.rollNo || '-';
+      els.examRollNo.textContent = s.examRollNo || '-';
+      els.dob.textContent = s.dob || '-';
+      els.admissionYear.textContent = s.yearOfAdmission || '-';
+      els.studentMobile.textContent = s.studentMobile || '-';
+      els.email.textContent = s.institutionalEmail || '-';
+      els.fatherName.textContent = s.fatherName || '-';
+      els.fatherMobile.textContent = s.fatherMobile || '-';
+      els.localAddress.textContent = s.localAddress || '-';
+      els.validUpto.textContent = s.validUpto || '-';
       els.groupName.textContent = groupName || "Original";
 
       const photoSrc = formatPhotoUrl(s.photo);
