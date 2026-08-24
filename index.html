@@ -1,42 +1,99 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>DDUC Student Verification</title>
-  <style>
-    * {
-      box-sizing: border-box;
-    }
-    html, body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      background-color: #f4f6f8;
-    }
-    iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-      outline: none;
-      display: block;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DDUC Student Verification</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background-color: #f1f5f9;
+            overflow: hidden; 
+            font-family: "Segoe UI", -apple-system, sans-serif;
+        }
+        
+        #loader {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #1e3877;
+            z-index: 10;
+        }
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #cbd5e1;
+            border-top: 4px solid #1e3877;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .iframe-wrapper {
+            position: relative;
+            width: 100%;
+            height: calc(100% + 36px); 
+            margin-top: -36px; 
+            -webkit-overflow-scrolling: touch;
+            overflow-y: scroll;
+            z-index: 20;
+            background-color: transparent;
+        }
+
+        @media (max-width: 480px) {
+            .iframe-wrapper {
+                height: calc(100% + 54px); 
+                margin-top: -54px; 
+            }
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            opacity: 0; 
+            transition: opacity 0.3s ease;
+        }
+        
+        iframe.loaded {
+            opacity: 1;
+            background-color: #f1f5f9; 
+        }
+    </style>
 </head>
 <body>
+    <div id="loader">
+        <div class="spinner"></div>
+        <div style="font-weight: 600;">Verifying ID...</div>
+    </div>
 
-  <iframe id="appFrame" allow="autoplay"></iframe>
+    <div class="iframe-wrapper">
+        <iframe id="gas-frame" src="" onload="this.classList.add('loaded');"></iframe>
+    </div>
 
-  <script>
-    // Active Google Apps Script Web App Endpoint
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwL4Ofqxqkt-_Dcmuy5QhryT7gXOeo2oPCZe8snoYPr9iPBR49B0BpwL_GfV4lTHg2qtg/exec";
-    
-    // Pass query parameters (?g=...&t=...) into the iframe
-    const queryString = window.location.search;
-    document.getElementById("appFrame").src = WEB_APP_URL + queryString;
-  </script>
-
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const g = urlParams.get('g') || '';
+        const t = urlParams.get('t') || '';
+        
+        // PASTE YOUR ACTUAL APPS SCRIPT DEPLOYMENT URL HERE
+        const webAppUrl = "https://script.google.com/macros/s/AKfycbzwv_fi6ndHRvO3mhQJETZYbts9bOEQOVSy9BV31g6jzQgHgJKUcHbN-1lT5MBZDtG35A/exec";
+        
+        const secretLockKey = "dduc_gh_auth_2026";
+        
+        if (g && t) {
+            document.getElementById('gas-frame').src = webAppUrl + "?g=" + encodeURIComponent(g) + "&t=" + encodeURIComponent(t) + "&lock=" + secretLockKey;
+        } else {
+            document.getElementById('loader').style.display = 'none';
+            document.body.innerHTML = "<div style='text-align:center; padding-top: 50px; color:#c62828; font-weight:bold;'>Invalid Scan. No data provided.</div>";
+        }
+    </script>
 </body>
 </html>
